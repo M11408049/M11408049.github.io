@@ -275,7 +275,7 @@
 
       // 繪製漂浮物
       push();
-      tint(255, 178); // 設定不透明度為 70%
+      tint(255, 100); // 設定不透明度為 70%
       for (let o of floatingObjects) {
         o.x += o.vx; o.y += o.vy;
         if (o.x < -100) o.x = width + 100;
