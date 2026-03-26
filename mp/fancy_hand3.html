@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Hand Tracking</title>
+    
+    <!-- 引入像素字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/addons/p5.sound.min.js"></script>
+    <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+
+    <style>
+      html, body { margin: 0; padding: 0; background-color: #FFDE59; overflow: hidden; font-family: 'Press Start 2P', cursive; color: #000; }
+      
+      /* UI 控制群組: 復古遊戲風格 */
+      .nav-group { position: fixed; top: 20px; left: 20px; z-index: 2000; display: flex; gap: 15px; }
+      .nav-btn { 
+        background: #fff; padding: 12px 20px; font-size: 12px; border: 4px solid #000; 
+        box-shadow: 4px 4px 0 #000; text-decoration: none; color: #000; cursor: pointer; 
+        transition: transform 0.1s, box-shadow 0.1s; 
+      }
+      .nav-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+      #reload-btn { background: #ffaaaa; }
+
+      #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FFDE59; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; }
+      .start-btn { 
+        background: #ff5050; border: 4px solid #000; color: #fff; padding: 15px 35px; 
+        font-size: 16px; box-shadow: 4px 4px 0 #000; cursor: pointer; margin-top: 30px; 
+        font-family: 'Press Start 2P', cursive; 
+      }
+      .start-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+      
+      #status-log { 
+        position: fixed; bottom: 15px; left: 20px; color: #000; font-size: 10px; z-index: 2000; 
+        background: #fff; padding: 8px; border: 4px solid #000; box-shadow: 4px 4px 0 #000; 
+      }
+      
+      #loading-msg { margin-top: 20px; font-size: 14px; color: #000; animation: blink 1s infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+      .title-text { font-size: 32px; color: #fff; text-shadow: 4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; }
+    </style>
+  </head>
+  <body>
+    <div class="nav-group">
+      <a href="../perception_demo.html" id="back-btn" class="nav-btn">HUB</a>
+      <div id="reload-btn" class="nav-btn" onclick="location.reload()">RELOAD</div>
+    </div>
+    
+    <div id="status-log">SYSTEM IDLE</div>
+
+    <div id="overlay">
+      <div class="title-text">PIXEL GAME V1</div>
+      <div id="loading-msg">INSERT COIN... LOADING...</div>
+      <button id="init-btn" class="start-btn" onclick="initSystem()" style="display:none;">PRESS START</button>
+    </div>
+
+    <script>
+      let video, handPose, hands = [];
+      let isReady = false;
+      let modelCheckTimer = 0;
+      let osc, envelope, linkOsc;
+      
+      let buttons = [
+        { label: 'PLAY', x: 40, y: 120, w: 100, h: 40, active: false },
+        { label: 'JUMP', x: 40, y: 180, w: 100, h: 40, active: false }
+      ];
+
+      // 像素色碼表
+      const pColors = {
+        'B': [20,20,20], 'W': [255,255,255], 'Y': [255,220,50], 'O': [255,140,0], 'R': [255,70,70], 
+        'G': [100,220,100], 'C': [50,200,255], 'P': [255,150,200], 'D':[100,50,0], '.':false
+      };
+
+      // 像素畫字串陣列
+      const arts = {
+        star: [
+          ".......BB.......","......BWYB......","......BWYYB.....",".....BWWYYYB....",
+          ".BBBBBWWYYYYBBBB.","BWYYYWWYYYYYYYOB.","BYYYYYYYYYYYYYOB.",".BBYYYBBYYBBYOB.",
+          "..BYYYBBYYBBYOB..","...BYYYYYYYYYOB...","..BBYYYYYYYYYOBB..",".BYYYYBBBBYYYYOB.",
+          ".BYYBB....BBYYOB.",".BBB........BBBB."
+        ],
+        cool: [
+          "....BBBBBB....","..BBYYYYYYBB..",".BYYBBBBBBBYB.","BYYBBWBBWBBBYB","BYYBBBBBBBBBYB",
+          "BYYYYYYYYYYYYB","BYYYBBYYBBYYYB","BYYYYBBBBBYYYB",".BYYYYYYYYYYB.","..BBYYYYYYBB..",
+          "....BBBBBB...."
+        ],
+        daisy: [
+          "....BBBBBBBB....","..BBBWWWWWWBBB..",".BBWWBBWWBBWWBB.","BBWWBBWWWWBBWWB.",
+          "BWWBBWYYYYWBBWWB","BWWWBYYBBBYYWWWB","BWWWBYBBYYBBYWWB","BBWWBYBYYYBYYWWB",
+          "BWWWBYYBBBYYWWWB","BWWBBWYYYYWBBWWB","BBWWBBWWWWBBWWB.",".BBWWBBWWBBWWBB.",
+          "..BBBWWWWWWBBB..","....BBBBBBBB...."
+        ],
+        fire: [
+          ".......B.......","......BRB......",".....BRRRB.....","....BRROORB....",
+          "...BRROOOORB...","..BRROOYYOORB..",".BRROOYYYYOORB.",".BROOYYWWYYOORB",
+          "BROOYWWWWWWYOOB","BROOYWWWWWWYOOB","BRROOYWWWWYOORB",".BRROOYYYYOORB.",
+          "..BRROOOOOORB..","...BBRRRRRRBB..",".....BBBBBB...."
+        ],
+        rainbow: [
+          "......BBBBBBBB......","....BBRRRRRRRRBB....","...BRROOOOOOOORRB...",
+          "..BROOYYYYYYYYOORB..",".BOOYYGGGGGGGGYYOOB.","BYYGGCCCCCCCCGGYYB..",
+          "BGGCCBWWWWWWBCGGBB..","BBCCBWWWWWWWWBCBBWBB",".BBWWWWWWWWWWWWWBWWB",
+          ".BWWWWWWWWWWWWWWWWWB","..BBBBBBBBBBBBBBBBB."
+        ],
+        heart: [ // 掌心高光愛心
+          "..BBB...BBB..",".BWWWBBBPPPB.","BWWWWWBPBPPPB","BWWPPPBPPPPPB",
+          "BWPPPPPPPPPPB",".BPPPPPPPPPB.","..BPPPPPPPB..","...BPPPPPB...",
+          "....BPPPB....",".....BPB.....","......B......"
+        ]
+      };
+
+      let sprites = {};
+      let floatingObjects = [];
+      const macaronCols = ['#FFB6C1', '#ADD8E6', '#98FB98', '#FFFACD', '#E6E6FA'];
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight);
+        
+        // 預先產生所有像素圖 (透過 p5.Graphics 加速繪製)
+        for(let key in arts) {
+          let strArr = arts[key];
+          let s = (key === 'heart') ? 3 : 6; // 愛心為節點，縮成較小倍率
+          let pg = createGraphics(strArr[0].length * s, strArr.length * s);
+          pg.noStroke();
+          for(let i=0; i<strArr.length; i++) {
+            for(let j=0; j<strArr[0].length; j++) {
+              let c = strArr[i][j];
+              if(pColors[c]) { pg.fill(pColors[c]); pg.rect(j*s, i*s, s, s); }
+            }
+          }
+          sprites[key] = pg;
+        }
+
+        // 產生背景漂浮物
+        let floatKeys = ['star', 'cool', 'daisy', 'fire', 'rainbow'];
+        for(let i=0; i<15; i++) {
+          floatingObjects.push({
+            x: random(width), y: random(height),
+            vx: random(-2, 2), vy: random(-2, 2),
+            sp: random(floatKeys)
+          });
+        }
+        
+        // 音效配置
+        osc = new p5.Oscillator('square'); // 復古方波
+        envelope = new p5.Envelope();
+        envelope.setADSR(0.001, 0.05, 0.1, 0.1);
+        envelope.setRange(0.5, 0);
+
+        linkOsc = new p5.Oscillator('triangle');
+        linkOsc.amp(0);
+        
+        handPose = ml5.handPose({ flipped: true, maxHands: 2 }, () => {
+          document.getElementById('loading-msg').style.display = 'none';
+          document.getElementById('init-btn').style.display = 'block';
+          updateLog("INSERT COIN TO START");
+        });
+      }
+
+      function updateLog(msg) {
+        document.getElementById('status-log').innerText = `INFO: ${msg}`;
+      }
+
+      function initSystem() {
+        userStartAudio();
+        playBootSound();
+        video = createCapture(VIDEO, () => {
+          document.getElementById('overlay').style.display = 'none';
+          startDetection();
+        });
+        video.size(640, 480);
+        video.hide();
+      }
+
+      function startDetection() {
+        isReady = true;
+        updateLog("GAME START...");
+        handPose.detectStart(video, results => {
+          hands = results;
+          modelCheckTimer = 0;
+        });
+      }
+
+      function playTone(freq) { osc.freq(freq); osc.start(); envelope.play(osc); }
+
+      function playBootSound() {
+        let f = 300;
+        let interval = setInterval(() => {
+          playTone(f); f += 250;
+          if (f > 1800) clearInterval(interval);
+        }, 50);
+      }
+
+      function draw() {
+        background('#FFDE59'); // 主色黃色
+        
+        // 繪製漂浮物
+        for(let o of floatingObjects) {
+          o.x += o.vx; o.y += o.vy;
+          if(o.x < -100) o.x = width+100;
+          if(o.x > width+100) o.x = -100;
+          if(o.y < -100) o.y = height+100;
+          if(o.y > height+100) o.y = -100;
+          image(sprites[o.sp], o.x, o.y);
+        }
+
+        if (!isReady) return;
+
+        modelCheckTimer++;
+        if (modelCheckTimer > 180) { 
+          updateLog("RECONNECTING...");
+          startDetection();
+          modelCheckTimer = 0;
+        }
+
+        push();
+        translate(width, 0); scale(-1, 1);
+        // 將攝影機隱藏或調成半透明像素風，這裡設定為極淡的影像作為底層
+        tint(255, 255, 255, 30);
+        image(video, 0, 0, width, height, 0, 0, video.width, video.height, COVER);
+        pop();
+
+        if (hands && hands.length > 0) {
+          for (let i = 0; i < hands.length; i++) {
+            let hand = hands[i];
+            let indexTip = hand.keypoints[8];
+            let tx = map(indexTip.x, 0, 640, 0, width);
+            let ty = map(indexTip.y, 0, 480, 0, height);
+
+            checkButtons(tx, ty);
+            drawPixelHand(hand);
+            drawCursor(tx, ty);
+          }
+
+          // 雙手連線
+          if (hands.length === 2) {
+            let d = dist(map(hands[0].keypoints[9].x,0,640,0,width), map(hands[0].keypoints[9].y,0,480,0,height),
+                         map(hands[1].keypoints[9].x,0,640,0,width), map(hands[1].keypoints[9].y,0,480,0,height));
+            let proximity = map(d, 100, 800, 1, 0, true);
+            drawLink(hands[0], hands[1], proximity);
+            linkOsc.amp(map(proximity, 0, 1, 0.05, 0.5), 0.1);
+            linkOsc.freq(80 + proximity * 100);
+            linkOsc.start();
+          } else { linkOsc.amp(0, 0.5); }
+        } else {
+          linkOsc.amp(0, 0.5);
+        }
+        drawVirtualButtons();
+      }
+
+      function drawPixelHand(hand) {
+        let connections = handPose.getConnections();
+        
+        // 繪製馬卡龍可愛連線
+        strokeWeight(12);
+        for (let i = 0; i < connections.length; i++) {
+          let a = connections[i][0], b = connections[i][1];
+          let x1 = map(hand.keypoints[a].x, 0, 640, 0, width);
+          let y1 = map(hand.keypoints[a].y, 0, 480, 0, height);
+          let x2 = map(hand.keypoints[b].x, 0, 640, 0, width);
+          let y2 = map(hand.keypoints[b].y, 0, 480, 0, height);
+          
+          stroke('#000'); // 黑框
+          line(x1, y1, x2, y2);
+        }
+        
+        strokeWeight(6);
+        for (let i = 0; i < connections.length; i++) {
+          let a = connections[i][0], b = connections[i][1];
+          let x1 = map(hand.keypoints[a].x, 0, 640, 0, width);
+          let y1 = map(hand.keypoints[a].y, 0, 480, 0, height);
+          let x2 = map(hand.keypoints[b].x, 0, 640, 0, width);
+          let y2 = map(hand.keypoints[b].y, 0, 480, 0, height);
+          
+          stroke(macaronCols[i % macaronCols.length]); // 馬卡龍漸變感
+          line(x1, y1, x2, y2);
+        }
+
+        // 繪製愛心節點
+        for(let i = 0; i < hand.keypoints.length; i++) {
+          let k = hand.keypoints[i];
+          let px = map(k.x, 0, 640, 0, width);
+          let py = map(k.y, 0, 480, 0, height);
+          
+          let hImg = sprites['heart'];
+          image(hImg, px - hImg.width/2, py - hImg.height/2);
+        }
+      }
+
+      function drawLink(h1, h2, k) {
+        let p1x = map(h1.keypoints[9].x, 0, 640, 0, width);
+        let p1y = map(h1.keypoints[9].y, 0, 480, 0, height);
+        let p2x = map(h2.keypoints[9].x, 0, 640, 0, width);
+        let p2y = map(h2.keypoints[9].y, 0, 480, 0, height);
+
+        strokeWeight(15); stroke('#000'); line(p1x, p1y, p2x, p2y);
+        strokeWeight(8); stroke(lerpColor(color('#FFB6C1'), color('#ADD8E6'), k)); line(p1x, p1y, p2x, p2y);
+      }
+
+      function checkButtons(x, y) {
+        buttons.forEach(btn => {
+          let isInside = x > btn.x && x < btn.x + btn.w && y > btn.y && y < btn.y + btn.h;
+          if (isInside && !btn.active) {
+            btn.active = true;
+            playTone(1000);
+          } else if (!isInside) { btn.active = false; }
+        });
+      }
+
+      function drawVirtualButtons() {
+        buttons.forEach(btn => {
+          push(); translate(btn.x, btn.y);
+          fill(btn.active ? '#FFDE59' : '#fff');
+          stroke('#000'); strokeWeight(4);
+          rect(0, 0, btn.w, btn.h);
+          fill('#000'); noStroke();
+          textAlign(CENTER, CENTER); textSize(12); text(btn.label, btn.w/2, btn.h/2);
+          pop();
+        });
+      }
+
+      function drawCursor(tx, ty) {
+        fill('#fff'); stroke('#000'); strokeWeight(2); circle(tx, ty, 10);
+      }
+
+      function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+    </script>
+  </body>
+</html>
