@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>貴婦養成指南：下午茶的優雅進化史</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tea: {
+                            50: '#fdf8f4',
+                            100: '#f9eee3',
+                            200: '#eed9c4',
+                            300: '#e1bc9d',
+                            400: '#d09772',
+                            500: '#c27a51',
+                            600: '#b2613d',
+                            700: '#944d34',
+                            800: '#783f2f',
+                            900: '#62352a',
+                        },
+                        cream: '#FDFBF7',
+                        gold: '#D4AF37',
+                    },
+                    fontFamily: {
+                        display: ['Noto Serif TC', 'serif'],
+                        body: ['Outfit', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fdf8f4;
+            color: #4a3728;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(194, 122, 81, 0.1);
+        }
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c27a51, transparent);
+            margin: 3rem 0;
+        }
+        .dropcap::first-letter {
+            float: left;
+            font-size: 4rem;
+            line-height: 1;
+            font-weight: 900;
+            padding-right: 0.5rem;
+            color: #c27a51;
+            font-family: 'Noto Serif TC', serif;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 2rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            transition: transform 0.5s ease;
+        }
+        .image-container:hover img {
+            transform: scale(1.02);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-tea-200 selection:text-tea-900">
+
+    <!-- Hero Section -->
+    <header class="relative min-h-[80vh] flex flex-col items-center justify-center pt-12 pb-24 px-6 overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+            <div class="absolute top-10 left-10 w-64 h-64 bg-tea-200 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 bg-tea-300 rounded-full blur-3xl opacity-50"></div>
+        </div>
+
+        <div class="container max-w-5xl mx-auto z-10 text-center space-y-8 animate-fade-in-up">
+            <span class="inline-block px-4 py-1.5 rounded-full border border-tea-400 text-tea-600 font-semibold text-sm tracking-widest uppercase mb-4">
+                Lifestyle & History
+            </span>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-black leading-tight text-tea-900 tracking-tight">
+                【貴婦養成指南】<br/>
+                <span class="text-tea-500 italic">下午茶不只是吃甜點！</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg md:text-xl text-tea-700 font-light leading-relaxed">
+                揭秘從「飢餓公爵夫人」到 IG 網美風的優雅進化史
+            </p>
+            
+            <div class="image-container max-w-4xl mx-auto pt-8 group relative">
+                <div class="absolute -inset-2 bg-gradient-to-r from-tea-200 to-tea-400 rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <img src='https://opal.google/board/blobs/a2c11a60-5055-4540-829c-7f0576215ff2' alt='優雅的日系手繪下午茶' class="relative" />
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container max-w-4xl mx-auto px-6 pb-32 relative">
+        
+        <!-- Intro Card -->
+        <article class="glass-card rounded-[2rem] p-8 md:p-12 mb-20 -mt-20 relative z-20">
+            <p class="dropcap text-xl leading-loose text-tea-800">
+                身為一個對生活質感略有研究的現代練習生，我們常常在週末午後，走進燈光美、氣氛佳的五星級飯店，面對那一座精緻的三層架，調整手機角度，試圖捕捉最完美的濾鏡感。但你是否曾邊喝著伯爵茶邊思考：這一桌充滿儀式感的甜點，究竟是怎麼從 19 世紀的英國莊園，一路「進化」到我們的手機螢幕裡的？
+            </p>
+            <p class="mt-6 text-xl leading-loose text-tea-800">
+                今天，我們暫且放下對熱量的焦慮，以一個知識份子的視角，優雅地拆解這場關於味蕾、階級與社交的百年演進。
+            </p>
+        </article>
+
+        <!-- Section 1 -->
+        <section class="space-y-12">
+            <div class="flex items-center gap-4">
+                <span class="text-6xl font-display font-black text-tea-200/50">01</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-tea-900">誰說 High Tea 才高級？<br/><span class="text-xl font-body font-normal text-tea-500">一場名稱上的「高級誤會」</span></h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-6">
+                    <p class="text-lg leading-relaxed text-tea-800">
+                        在踏入下午茶的世界前，我們得先正名。這大概是餐飲史上最廣為流傳的「反直覺」冷知識了：如果你在倫敦的茶館大喊「我要一份 High Tea」，服務生可能會端出一盤紮實的肉派 or 馬鈴薯。
+                    </p>
+                    <div class="bg-tea-100/50 p-6 rounded-2xl border-l-4 border-tea-400">
+                        <p class="italic text-tea-700 italic">
+                            歷史上，真正屬於貴族、在社交客廳的矮桌（Low Table）旁優雅享用的，被稱為 <strong>Low Tea</strong>。
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-white/80 p-8 rounded-3xl shadow-sm border border-tea-100 flex flex-col justify-center animate-float">
+                    <h3 class="text-center font-display font-bold text-tea-800 mb-6 border-b pb-4">經典三層架攻略</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 bg-tea-400 text-white rounded-full flex items-center justify-center text-xs shrink-0 mt-1">3</span>
+                            <div><strong class="text-tea-900">頂層：驚喜</strong><p class="text-sm">縮小版法式甜點或水果塔。</p></div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 bg-tea-400 text-white rounded-full flex items-center justify-center text-xs shrink-0 mt-1">2</span>
+                            <div><strong class="text-tea-900">中層：靈魂</strong><p class="text-sm">趁熱享用的司康（Scones），抹上凝脂奶油與果醬。</p></div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 bg-tea-400 text-white rounded-full flex items-center justify-center text-xs shrink-0 mt-1">1</span>
+                            <div><strong class="text-tea-900">底層：鹹食</strong><p class="text-sm">小黃瓜、煙燻鮭魚手指三明治。</p></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 2: Historical Theater -->
+        <section class="space-y-12">
+            <div class="flex items-center gap-4">
+                <span class="text-6xl font-display font-black text-tea-200/50">02</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-tea-900">歷史小劇場：<br/><span class="text-xl font-body font-normal text-tea-500">一場由「肚子餓」引發的時尚革命</span></h2>
+            </div>
+
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-tea-400 to-gold rounded-3xl blur opacity-25 group-hover:opacity-40 transition"></div>
+                <div class="relative bg-white p-10 rounded-3xl leading-relaxed space-y-6">
+                    <p class="text-lg">
+                        下午茶的誕生，其實沒有我們想像中那麼「神聖」，它最初的驅動力非常人性化：<strong class="text-tea-600 underline decoration-tea-200 decoration-4 underline-offset-4">「肚子餓」</strong>。
+                    </p>
+                    <p class="text-lg">
+                        19 世紀，第七任貝德福德公爵夫人安娜·瑪麗亞面對一個大難題。每天到下午 4 點，公爵夫人的肚子就會發出尷尬的聲響。於是，她決定挑戰常規，要求僕人偷偷把茶、麵包和奶油送進房裡。
+                    </p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="p-4 bg-tea-50 rounded-xl">
+                            <div class="text-2xl mb-2">🍞</div>
+                            <span class="text-xs font-bold text-tea-700">偷吃麵包</span>
+                        </div>
+                        <div class="p-4 bg-tea-50 rounded-xl">
+                            <div class="text-2xl mb-2">🫖</div>
+                            <span class="text-xs font-bold text-tea-700">午後清茶</span>
+                        </div>
+                        <div class="p-4 bg-tea-50 rounded-xl">
+                            <div class="text-2xl mb-2">👗</div>
+                            <span class="text-xs font-bold text-tea-700">優雅茶袍</span>
+                        </div>
+                        <div class="p-4 bg-tea-50 rounded-xl">
+                            <div class="text-2xl mb-2">✨</div>
+                            <span class="text-xs font-bold text-tea-700">社交革命</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 3: Bento Style -->
+        <section class="space-y-12">
+            <div class="flex items-center gap-4">
+                <span class="text-6xl font-display font-black text-tea-200/50">03</span>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-tea-900">現代人的儀式感</h2>
+            </div>
+            
+            <div class="bento-grid">
+                <div class="md:col-span-2 glass-card p-8 rounded-3xl hover:shadow-xl transition-all duration-500 cursor-default">
+                    <h4 class="text-xl font-bold text-tea-900 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-tea-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        相機先吃 (Instagrammable)
+                    </h4>
+                    <p class="text-tea-800 leading-relaxed">
+                        現代下午茶如果沒有視覺震撼，就失去了社群靈魂。飯店爭相與美妝品牌聯名，本質上是在提供一種「可供展示的品味」。
+                    </p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl bg-tea-800 text-white hover:shadow-xl transition-all duration-500 cursor-default group">
+                    <h4 class="text-xl font-bold mb-4 flex items-center gap-2 group-hover:text-tea-300 transition">
+                        唇膏效應
+                    </h4>
+                    <p class="text-tea-100 text-sm leading-relaxed">
+                        負擔得起的奢華 (Affordable Luxury)。用兩千元有找的微小奢侈，療癒緊繃的斜槓心靈。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4 & 5: Dark Accents -->
+        <section class="mt-20 grid md:grid-cols-2 gap-8">
+            <div class="p-10 bg-tea-900 text-tea-50 rounded-[2.5rem] shadow-2xl space-y-6">
+                <h3 class="text-2xl font-display font-bold">優雅背後的真相</h3>
+                <div class="space-y-4 text-tea-200">
+                    <p class="text-sm">一套完整的下午茶，其含糖量與脂肪往往直接突破每日建議攝取的一半。</p>
+                    <hr class="border-tea-800" />
+                    <p class="text-sm italic">高端飯店的著裝要求（Dress Code），形成了一種財力與品味的無聲角力。</p>
+                </div>
+            </div>
+            <div class="p-10 border-2 border-tea-200 rounded-[2.5rem] space-y-6 bg-white/50">
+                <h3 class="text-2xl font-display font-bold text-tea-900">未來：永續與科技</h3>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 text-tea-700">
+                        <span class="w-2 h-2 bg-tea-400 rounded-full"></span>
+                        減糖、植物奶、無麩質新寵
+                    </li>
+                    <li class="flex items-center gap-3 text-tea-700">
+                        <span class="w-2 h-2 bg-tea-400 rounded-full"></span>
+                        公平貿易茶葉與在地食材
+                    </li>
+                    <li class="flex items-center gap-3 text-tea-700">
+                        <span class="w-2 h-2 bg-tea-400 rounded-full"></span>
+                        VR 沉浸式跨時空體驗
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="mt-32 text-center space-y-10">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <h2 class="text-3xl font-display font-black text-tea-900 italic underline decoration-gold/30">結語</h2>
+                <p class="text-xl leading-loose text-tea-800 italic">
+                    「下午茶從一場私人的『生理補償』，演變成大英帝國的文化標誌，再到現在的數位美學載體，其核心精神始終沒變：在那一段被偷走的時光裡，優雅且專注地寵愛自己。」
+                </p>
+                <div class="pt-10 flex flex-col items-center">
+                    <div class="w-12 h-1 bg-tea-300 mb-6"></div>
+                    <p class="text-tea-500 font-bold tracking-widest">學號：M11408049</p>
+                    <p class="text-tea-400 text-sm mt-2">我們下次再聊生活的另一種深度。</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Simple Hover Interactivity -->
+    <script>
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>
